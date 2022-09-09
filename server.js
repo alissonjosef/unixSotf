@@ -10,17 +10,19 @@ app.use(express.json());
 
 const User = require("./models/User");
 
-/* const authRoutes = require('./api/routes/authRoutes')
+const authRoutes = require('./api/routes/authRoutes')
 
-app.use('/auth', authRoutes) */
+app.use('/auth', authRoutes)
 
 app.get("/", async (req, res) => {
   res.status(200).json({ msg: "Bem vindo a API ✌️" });
 });
 
+
+
 //Private Route
 
-app.get("/user/:id", checkToken, async (req, res) => {
+/* app.get("/user/:id", checkToken, async (req, res) => {
   const id = req.params.id;
 
   const user = await User.findById(id, "-password");
@@ -129,7 +131,7 @@ app.post("/auth/login", async (req, res) => {
     console.log(error);
     res.status(500).json({ msg: "error no servidor" });
   }
-});
+}); */
 
 const dbUser = process.env.DB_USER;
 const dbPassword = process.env.DB_PASSWORD;

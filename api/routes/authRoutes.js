@@ -3,11 +3,11 @@ const router = require('express').Router()
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
-const User = require("./models/User");
+const User = require("../../models/User");
 
 
 
-router.get("/user/:id", checkToken, async (req, res) => {
+router.get("/:id", checkToken, async (req, res) => {
     const id = req.params.id;
   
     const user = await User.findById(id, "-password");
@@ -39,7 +39,7 @@ router.get("/user/:id", checkToken, async (req, res) => {
     }
   }
   
-  router.post("/auth", async (req, res) => {
+  router.post("/", async (req, res) => {
     const { registry, password, confirmpassword } = req.body;
   
     if (!registry) {
@@ -78,7 +78,7 @@ router.get("/user/:id", checkToken, async (req, res) => {
     }
   });
   
-  router.post("/auth/login", async (req, res) => {
+  router.post("/login", async (req, res) => {
     const { registry, password } = req.body;
   
     if (!registry) {
