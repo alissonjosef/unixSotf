@@ -12,7 +12,7 @@ const User = mongoose.model('User', {
     },
     password: { type: String, required: [true, '{PATH} do usuario é um campo obrigatório'] },
     perfil: { type: String, required: [true, '{PATH} do usuario é um campo obrigatório'] },
-    registry: { type: String, unique: true, required: [true, '{PATH} do usuario é um campo obrigatório'] },
+    registry: { type: String, unique: true, required: [true, '{PATH} do usuario é um campo obrigatório']},
 })
 
 module.exports = User
