@@ -1,18 +1,5 @@
-require("dotenv").config();
-const express = require("express");
+/* require("dotenv").config();
 const mongoose = require("mongoose");
-
-const app = express();
-
-app.use(express.json());
-
-const authRoutes = require("./api/routes/authRoutes");
-
-app.use("/auth", authRoutes);
-
-app.get("/", async (req, res) => {
-  res.status(200).json({ msg: "Bem vindo a API ✌️" });
-});
 
 const dbUser = process.env.DB_USER;
 const dbPassword = process.env.DB_PASSWORD;
@@ -27,3 +14,7 @@ mongoose
     })
   })
   .catch((err) => console.log(err));
+
+  mongoose.Promise = global.Promise
+
+  module.exports = mongoose */
