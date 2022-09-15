@@ -26,6 +26,7 @@ const User = mongoose.model("User", {
   profile: {
     type: String,
     required: [true, "{PATH} do usuario é um campo obrigatório"],
+    enum: ["OPERADOR", "ADMIN", "SUPERVISOR"],
   },
   registry: {
     type: String,
@@ -34,8 +35,8 @@ const User = mongoose.model("User", {
   },
   createAt: {
     type: Date,
-    default: Date.now
-  }
+    default: Date.now,
+  },
 });
 
 module.exports = User;

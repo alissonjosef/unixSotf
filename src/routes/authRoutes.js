@@ -5,6 +5,22 @@ const jwt = require("jsonwebtoken");
 
 const User = require("../../models/User");
 
+const { userRegister } = require('../utils/Auth')
+
+/* router.post("/admin", async (req, res) => {
+  await userRegister(req.body, 'ADMIN', res)
+})
+
+
+router.post("/supervisor", async (req, res) => {
+  await userRegister(req.body, 'SUPERVISOR', res)
+})
+
+router.post("/oparador", async (req, res) => {
+  await userRegister(req.body, 'OPERADOR', res)
+}) */
+
+
 router.get("/:id", checkToken, async (req, res) => {
   const id = req.params.id;
 
@@ -109,7 +125,7 @@ router.post("/login", async (req, res) => {
   const checkPassword = await bcrypt.compare(password, user.password);
 
   if (!checkPassword) {
-    return res.status(422).json({ msg: "Senha imvaálida!" });
+    return res.status(422).json({ msg: "Senha invalida!" });
   }
 
   try {
@@ -128,5 +144,7 @@ router.post("/login", async (req, res) => {
     res.status(500).json({ msg: "error no servidor" });
   }
 });
+
+
 
 module.exports = router;
