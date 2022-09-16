@@ -5,23 +5,32 @@ const jwt = require("jsonwebtoken");
 
 const User = require("../../models/User");
 
-const { userRegister } = require('../utils/Auth')
+const { userRegister, adminLogin } = require("../utils/Auth");
 
-/* router.post("/admin", async (req, res) => {
-  await userRegister(req.body, 'ADMIN', res)
-})
-
+router.post("/admin", async (req, res) => {
+  await userRegister(req.body, "ADMIN", res);
+});
 
 router.post("/supervisor", async (req, res) => {
-  await userRegister(req.body, 'SUPERVISOR', res)
-})
+  await userRegister(req.body, "SUPERVISOR", res);
+});
 
 router.post("/oparador", async (req, res) => {
-  await userRegister(req.body, 'OPERADOR', res)
-}) */
+  await userRegister(req.body, "OPERADOR", res);
+});
 
+router.post("/login-admin", async (req, res) => {
+  await adminLogin(req.body, "ADMIN", res);
+});
 
-router.get("/:id", checkToken, async (req, res) => {
+router.post("/login-supervisor", async (req, res) => {
+  await adminLogin(req.body, "SUPERVISOR", res);
+});
+
+router.post("/login-operador", async (req, res) => {
+  await adminLogin(req.body, "OPERADOR", res);
+});
+/* router.get("/:id", checkToken, async (req, res) => {
   const id = req.params.id;
 
   const user = await User.findById(id, "-password");
@@ -143,8 +152,6 @@ router.post("/login", async (req, res) => {
     console.log(error);
     res.status(500).json({ msg: "error no servidor" });
   }
-});
-
-
+}); */
 
 module.exports = router;

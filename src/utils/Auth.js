@@ -1,54 +1,100 @@
 const User = require("../../models/User");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
-const userRegister = async (userDets, role, res) => {
-  try {
-    let usernameNotTaken = await validateUsername(userDets.username);
+const userRegister = async (userDets, profile, res) => {
+  let usernameNotTaken = await userExists(userDets.registry);
   if (!usernameNotTaken) {
-    return res.status(400).json({
-      message: `Username is already taken.`,
+    return res.status(422).json({
+      message: `Por favor, utlize outro registro!`,
       success: false,
     });
   }
 
-  let emailNotRegistre = await validateEmail(userDets.email);
-  if (!emailNotRegistre) {
-    return res.status(400).json({
-      message: `Email is already registered.`,
+  let passwordNotTaken = await passwordExists(userDets.password);
+  if (!passwordNotTaken) {
+    return res.status(422).json({
+      message: `A senha e obrigatorio!`,
       success: false,
     });
   }
 
-  const password = await bcrypt.hashed(userDets.password, 12);
+  const salt = await bcrypt.genSalt(12);
+  const passwordHash = await bcrypt.hash(userDets.password, salt);
 
-  const newUser = new User({
+  const user = new User({
     ...userDets,
-    password,
-    role
+    password: passwordHash,
+    profile,
   });
-  await newUser.save();
-  return res.status(201).json({
-    message: `Hurry! now you are successfully registred. Please nor login.`,
-    success: true,
-  });
+
+  try {
+    await user.save();
+
+    res.status(201).json({ meg: "Usuario criado como sucesso" });
   } catch (error) {
-    return res.status(500).json({
-        message: `Unableto create your accnot`,
-        success: false,
+    console.log(error);
+    res.status(500).json({ msg: "Unable to connect with Database" });
+  }
+};
+
+const adminLogin = async (userCreds, profile, res) => {
+  const { registry, password } = userCreds;
+
+  const user = await User.findOne({ registry: registry });
+
+  const checkPassword = await bcrypt.compare(password, user.password);
+
+  if (!checkPassword) {
+    return res.status(422).json({ msg: "Senha invalida!" });
+  }
+
+  if (user.profile === profile) {
+    return res
+      .status(422)
+      .json({
+        msg: "Certifique-se de que está a iniciar sessão a partir do portal certo",
       });
   }
+
+  try {
+    const secret = process.env.SECRET;
+
+    const token = jwt.sign(
+      {
+        id: user._id,
+        profile: user.profile
+      },
+      secret,
+      { expiresIn: "7 days" }
+    );
+
+    const result = {
+      token,
+      id: user._id,
+      expiresIn: 168,
+    };
+
+    res
+      .status(200)
+      .json({ ...result, msg: "Autenticação realizada com sucesso", token });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "error no servidor" });
+  }
 };
 
-const validateUsername = async (username) => {
-  let user = await User.findOne({ username });
+const userExists = async (registry) => {
+  const user = await User.findOne({ registry });
   return user ? false : true;
 };
 
-const validateEmail = async (email) => {
-  let user = await User.findOne({ email });
-  return user ? false : true;
+const passwordExists = async (password) => {
+  const passwordUser = await User.findOne({ password });
+  return passwordUser ? false : true;
 };
 
 module.exports = {
-    userRegister
-}
+  userRegister,
+  adminLogin
+};
