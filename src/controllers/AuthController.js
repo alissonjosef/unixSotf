@@ -1,6 +1,6 @@
 const User = require("../../models/User");
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
+const {getToken} = require("../../config/jwt-config");
 
 const userRegister = async (userDets, profile, res) => {
   let usernameNotTaken = await userExists(userDets.registry);
@@ -54,23 +54,22 @@ const login = async (userCreds, res) => {
   }
 
   try {
-    const secret = process.env.SECRET;
-
-    const expires = user.profile !== "OPERADOR" ? 86400 : 999999999999
-
-    const token = jwt.sign(
-      {
-        id: user._id,
-        profile: user.profile
-      },
-      secret,
-      { expiresIn: expires }
-    );
+  
+    const obj = {
+      id: user.id,
+      email: user.email,
+      cpf: user.cpf,
+      profile: user.profile,
+    };
+  
+    const token = getToken(obj);
 
     const result = {
+      name: user.name,
+      profile: user.profile,
       token,
       id: user._id,
-      expiresIn: expires,
+      enabled: user.enabled
     };
 
     res

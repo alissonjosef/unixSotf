@@ -1,15 +1,22 @@
 require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
+const { configuration } = require("./config/jwt-config");
 
 const app = express();
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-const router = require("./src/routes/index")
+const router = require("./src/routes/index");
 
-app.use("/", router)
-
+app.use(
+  "/",
+  configuration.unless({
+    path: ['/auth'],
+  }),
+  router
+);
 
 app.get("/", async (req, res) => {
   res.status(200).json({ msg: "Bem vindo a API ✌️" });
@@ -25,6 +32,6 @@ mongoose
   .then(() => {
     app.listen(8080, () => {
       console.log("Conectou ao Banco 👍");
-    })
+    });
   })
   .catch((err) => console.log(err));
