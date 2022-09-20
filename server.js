@@ -6,9 +6,10 @@ const app = express();
 
 app.use(express.json());
 
-const authRoutes = require("./src/routes/authRoutes");
+const router = require("./src/routes/index")
 
-app.use("/auth", authRoutes);
+app.use("/", router)
+
 
 app.get("/", async (req, res) => {
   res.status(200).json({ msg: "Bem vindo a API ✌️" });

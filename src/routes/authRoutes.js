@@ -5,31 +5,18 @@ const jwt = require("jsonwebtoken");
 
 const User = require("../../models/User");
 
-const { userRegister, adminLogin } = require("../utils/Auth");
+const { userRegister, login } = require("../controllers/AuthController");
 
 router.post("/admin", async (req, res) => {
   await userRegister(req.body, "ADMIN", res);
 });
 
-router.post("/supervisor", async (req, res) => {
-  await userRegister(req.body, "SUPERVISOR", res);
+
+router.post("/", async (req, res) => {
+  await login (req.body, res);
 });
 
-router.post("/oparador", async (req, res) => {
-  await userRegister(req.body, "OPERADOR", res);
-});
 
-router.post("/login-admin", async (req, res) => {
-  await adminLogin(req.body, "ADMIN", res);
-});
-
-router.post("/login-supervisor", async (req, res) => {
-  await adminLogin(req.body, "SUPERVISOR", res);
-});
-
-router.post("/login-operador", async (req, res) => {
-  await adminLogin(req.body, "OPERADOR", res);
-});
 /* router.get("/:id", checkToken, async (req, res) => {
   const id = req.params.id;
 
