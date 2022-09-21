@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const { userRegister } = require("../controllers/userController");
 const Company = require("../../models/Company");
+
 router.use((req, res, next) => {
   //console.log('Called: ', req.user.user.perfil);
   if (req.auth.profile != "ADMIN") {
