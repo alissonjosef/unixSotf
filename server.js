@@ -13,7 +13,7 @@ const router = require("./src/routes/index");
 app.use(
   "/",
   configuration.unless({
-    path: ['/auth'],
+    path: ["/auth", "/auth/admin"],
   }),
   router
 );
