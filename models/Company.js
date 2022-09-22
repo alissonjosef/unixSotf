@@ -1,14 +1,15 @@
 const mongoose = require("mongoose");
 const validators = require("mongoose-validators");
+
 const {Schema} = mongoose
 
-const User = mongoose.model("User", {
+const Company = mongoose.model("Company", {
   name: {
     type: String,
     trim: true,
     required: [true, "{PATH} do usuario é um campo obrigatório"],
   },
-  cpf: {
+  cnpj: {
     type: String,
     trim: true,
     unique: false,
@@ -24,32 +25,18 @@ const User = mongoose.model("User", {
     type: String,
     required: [true, "{PATH} do usuario é um campo obrigatório"],
   },
-  password: {
-    type: String,
-    required: [true, "{PATH} do usuario é um campo obrigatório"],
+  master: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
   },
-  profile: {
-    type: String,
-    required: [true, "{PATH} do usuario é um campo obrigatório"],
-    enum: ["OPERADOR", "ADMIN", "SUPERVISOR"],
-  },
-  registry: {
-    type: String,
-    unique: true,
-    required: [true, "{PATH} do usuario é um campo obrigatório"],
+  enabled: {
+    type: Boolean,
+    default: true,
   },
   createAt: {
     type: Date,
     default: Date.now,
   },
-  enabled: {
-    type: Boolean,
-    default: true
-  },
-  company: {
-    type: Schema.Types.ObjectId,
-    ref: "Company",
-  },
 });
 
-module.exports = User;
+module.exports = Company;
