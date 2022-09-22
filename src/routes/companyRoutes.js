@@ -1,6 +1,7 @@
 const router = require("express").Router();
 
 const Headset = require("../../models/Headset");
+const User = require("../../models/User");
 
 router.use((req, res, next) => {
   //console.log("Called: ", req.auth.profile);
@@ -36,15 +37,14 @@ router.post("/headset", async (req, res) => {
 });
 
 router.get("/headset", async (req, res) => {
-  const {
-    limit,
-    skip
-  } = req.query
+  const { limit, skip } = req.query;
 
   return res.status(200).json(
     await Headset.find({
-      company: req.auth.company
-    }).skip(Number(skip)).limit(Number(limit))
+      company: req.auth.company,
+    })
+      .skip(Number(skip))
+      .limit(Number(limit))
   );
 });
 
@@ -68,17 +68,90 @@ router.put("/headset", async (req, res) => {
   }
 });
 
-router.post('user', async (req, res) => {
+router.post("/user", async (req, res) => {
+  const { name, cpf, registry, email, phone, headset, profile } = req.body;
 
-})
+  if (!name | !cpf | !registry | !email | !phone) {
+    return res.status(400).json({ msg: "Campo invalido" });
+  }
 
-router.put('user', async (req, res) => {
-  
-})
+  if (!profile || ("OPERADOR" != profile && "SUPERVISOR" != profile)) {
+    return res.status(400).json({ msg: "Perfil invalido" });
+  }
 
-router.get('user', async (req, res) => {
-  
-})
+  const userWithRegistry = await User.findOne({ registry });
+  if (userWithRegistry) {
+    return res.status(400).json({ msg: "Registro já cadastrado" });
+  }
+
+  const userWithCpf = await User.findOne({ cpf });
+  if (userWithCpf) {
+    return res.status(400).json({ msg: "CPF já cadastrado" });
+  }
+
+  const userWithEmail = await User.findOne({ email });
+  if (userWithEmail) {
+    return res.status(400).json({ msg: "E-mail já cadastrado" });
+  }
+
+  const existHeadset = await Headset.findOne({ headset });
+  if (!existHeadset) {
+    return res.status(400).json({ msg: "Headset não cadastrado" });
+  }
+
+  try {
+
+    const password = "@unix"
+    const user = new User({
+      name,
+      cpf,
+      registry,
+      email,
+      phone,
+      headset,
+      password,
+      profile
+    });
+
+    await user.save()
+    res.status(200).json(user)
+  } catch (error) {
+    await tryError(error, res);
+  }
+});
+
+router.put("/user", async (req, res) => {
+  const { name, cpf, registry, email, phone, enabled, profile, _id } = req.body;
+
+  try {
+    const password = "@unix"
+    let user = await User.findByIdAndUpdate(_id , {
+      name,
+      cpf,
+      email,
+      phone,
+      password,
+      profile,
+      registry,
+      enabled,
+    })
+    if (!user) {
+      return res.status(404).json({ msg: "Não encontrado" });
+    }
+
+    res.status(200).json({ msg: "Atualizado com sucesso" });
+  } catch (error) {
+    await tryError(error, res);
+  }
+});
+
+router.get("/user", async (req, res) => {
+  return res.status(200).json(
+    await User.find({
+      company: req.auth.company
+    })
+  )
+});
 
 async function tryError(error, res) {
   if (error.name === "ValidationError") {

@@ -1,16 +1,16 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
-const Headset = mongoose.model("Headset", {
-  user_id: {
+const ActivityData = mongoose.model("ActivityData", {
+  user: {
     type: Schema.Types.ObjectId,
-    ref: "User_id",
+    ref: "User",
     required: [true, "{PATH} do usuario é um campo obrigatório"],
   },
   status: {
     type: Number,
     required: [true, "{PATH} do usuario é um campo obrigatório"],
-    enum: ["0", "1"],
+    status: Number,
   },
   createAt: {
     type: Date,
@@ -18,4 +18,4 @@ const Headset = mongoose.model("Headset", {
   },
 });
 
-module.exports = Headset;
+module.exports = ActivityData;
