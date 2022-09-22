@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const validators = require("mongoose-validators");
-const {Schema} = mongoose
+const { Schema } = mongoose;
 
 const User = mongoose.model("User", {
   name: {
@@ -38,17 +38,21 @@ const User = mongoose.model("User", {
     unique: true,
     required: [true, "{PATH} do usuario é um campo obrigatório"],
   },
-  createAt: {
-    type: Date,
-    default: Date.now,
-  },
   enabled: {
     type: Boolean,
-    default: true
+    default: true,
   },
   company: {
     type: Schema.Types.ObjectId,
     ref: "Company",
+  },
+  headset: {
+    type: Schema.Types.ObjectId,
+    ref: "Headset",
+  },
+  createAt: {
+    type: Date,
+    default: Date.now,
   },
 });
 

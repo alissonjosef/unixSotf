@@ -80,7 +80,7 @@ router.put("/company/:id", async (req, res) => {
 
   const updatedCompany = await Company.updateOne({ _id: id }, company);
 
-  return res.status(200).json({msg: 'Registro Atualizado', company});
+  return res.status(200).json({msg: 'Registro Atualizado'});
 });
 
 router.get("/company", async (req, res) => {
