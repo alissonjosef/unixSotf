@@ -48,24 +48,30 @@ router.post(
       });
     }
 
-    for await (let { model, serial_number, locale } of headsetCsv) {
-      const headsetWithModel = await Headset.findOne({ model });
-      if (headsetWithModel) {
-        return res.status(400).json({ msg: "Modelo já cadastrado" });
-      }
+    try {
+      for await (let { model, serial_number, locale } of headsetCsv) {
+        const headsetWithModel = await Headset.findOne({ model });
+        if (headsetWithModel) {
+          return res.status(400).json({ msg: "Modelo já cadastrado" });
+        }
 
-      const headsetWithSerial = await Headset.findOne({ serial_number });
-      if (headsetWithSerial) {
-        return res.status(400).json({ msg: "Numero de serial já cadastrado" });
+        const headsetWithSerial = await Headset.findOne({ serial_number });
+        if (headsetWithSerial) {
+          return res
+            .status(400)
+            .json({ msg: "Numero de serial já cadastrado" });
+        }
+        await Headset({
+          model,
+          serial_number,
+          locale,
+          company: req.auth.company,
+        }).save();
       }
-      await Headset({
-        model,
-        serial_number,
-        locale,
-        company: req.auth.company,
-      }).save();
+      res.status(200).json({ msg: "Atualizado com sucesso" });
+    } catch (error) {
+      await tryError(error, res);
     }
-    res.status(200).json({ msg: "Atualizado com sucesso" });
   }
 );
 

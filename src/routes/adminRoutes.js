@@ -32,14 +32,16 @@ router.post("/company", async (req, res) => {
 
     /* const passwordUnique = "@unix"; */
 
-    const { MAILER_USER, MAILER_PASS } = process.env;
-
     const transporter = nodemailer.createTransport({
+      name: process.env.MAILER_PASS,
       host: "smtp.mailtrap.io",
       port: 2525,
       auth: {
-        user: "2e029d484b977f",
-        pass: "d97d4657e3ba60",
+        user: process.env.MAILER_USER,
+        pass: process.env.MAILER_PASS,
+      },
+      tls: {
+        rejectUnauthorized: false,
       },
     });
 
@@ -47,7 +49,7 @@ router.post("/company", async (req, res) => {
 
     transporter
       .sendMail({
-        from: "Administrador <63498cba40-c25126@inbox.mailtrap.io>",
+        from: "Administrador <3f45fcae-df63-360c-ab44-ffc93ec56fc4@gmail.com>",
         to: email,
         subject: "Recuperação de senha!",
         html: `<p>Olá, sua nova senha para acessar o sistema e: ${passwordUnique}</p>`,
