@@ -170,6 +170,7 @@ router.post("/user", async (req, res) => {
       headset,
       password,
       profile,
+      company: req.auth.company,
     });
 
     await user.save();
@@ -207,9 +208,29 @@ router.put("/user", async (req, res) => {
 router.get("/user", async (req, res) => {
   const { name, registry } = req.query;
 
+  const company = req.auth.company;
+
+  if (name && !name.trim() !== "") {
+    return res.status(200).json(
+      await User.find({
+        name,
+        company,
+      })
+    );
+  }
+
+  if (registry && !registry.trim() !== "") {
+    return res.status(200).json(
+      await User.find({
+        registry,
+        company,
+      })
+    );
+  }
+
   return res.status(200).json(
     await User.find({
-      name,
+      company,
     })
   );
 });

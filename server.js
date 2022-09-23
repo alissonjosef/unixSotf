@@ -24,7 +24,7 @@ const dbPassword = process.env.DB_PASSWORD;
 
 mongoose
   .connect(
-    `mongodb+srv://${dbUser}:${dbPassword}@unixjwt.8olc586.mongodb.net/?retryWrites=true&w=majority`
+    `mongodb+srv://${dbUser}:${dbPassword}@unixjwt.8olc586.mongodb.net/prod?retryWrites=true&w=majority`
   )
   .then(() => {
     app.listen(8080, () => {
