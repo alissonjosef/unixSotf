@@ -3,6 +3,12 @@ const router = require("express").Router();
 const Headset = require("../models/Headset");
 const User = require("../models/User");
 
+const multer = require("multer");
+const { Readable } = require("stream");
+const readline = require("readline");
+
+const multerConfig = multer();
+
 router.use((req, res, next) => {
   //console.log("Called: ", req.auth.profile);
   if (req.auth.profile != "SUPERVISOR") {
@@ -14,6 +20,54 @@ router.use((req, res, next) => {
 router.get("/relatorio/:id", async (req, res) => {
   return res.status(200).json({ msg: `Relatório da data ${req.query.data}` });
 });
+
+router.post(
+  "/headset/upload",
+  multerConfig.single("file"),
+  async (req, res) => {
+    const { file } = req;
+    const { buffer } = file;
+
+    const readableFile = new Readable();
+    readableFile.push(buffer);
+    readableFile.push(null);
+
+    const headsetLine = readline.createInterface({
+      input: readableFile,
+    });
+
+    const headsetCsv = [];
+
+    for await (let line of headsetLine) {
+      const headsetLineSplit = line.split(";");
+
+      headsetCsv.push({
+        model: headsetLineSplit[0],
+        serial_number: headsetLineSplit[1],
+        locale: headsetLineSplit[2],
+      });
+    }
+
+    for await (let { model, serial_number, locale } of headsetCsv) {
+      const headsetWithModel = await Headset.findOne({ model });
+      if (headsetWithModel) {
+        return res.status(400).json({ msg: "Modelo já cadastrado" });
+      }
+
+      const headsetWithSerial = await Headset.findOne({ serial_number });
+      if (headsetWithSerial) {
+        return res.status(400).json({ msg: "Numero de serial já cadastrado" });
+      }
+      await Headset({
+        model,
+        serial_number,
+        locale,
+        company: req.auth.company,
+      }).save();
+    }
+    res.status(200).json({ msg: "Atualizado com sucesso" });
+  }
+);
 
 router.post("/headset", async (req, res) => {
   const { model, serial_number, locale } = req.body;
@@ -145,11 +199,11 @@ router.put("/user", async (req, res) => {
 });
 
 router.get("/user", async (req, res) => {
-  const {name, registry} = req.query
+  const { name, registry } = req.query;
 
   return res.status(200).json(
     await User.find({
-      name
+      name,
     })
   );
 });

@@ -2,7 +2,7 @@ const router = require("express").Router();
 const { userRegister } = require("../controllers/userController");
 const Company = require("../models/Company");
 const nodemailer = require("nodemailer");
-const crypto = require("crypto")
+const crypto = require("crypto");
 
 router.use((req, res, next) => {
   console.log("Called: ", req.auth.profile);
@@ -38,24 +38,26 @@ router.post("/company", async (req, res) => {
       host: "smtp.mailtrap.io",
       port: 2525,
       auth: {
-        user: MAILER_USER,
-        pass: MAILER_PASS
-      }
+        user: "2e029d484b977f",
+        pass: "d97d4657e3ba60",
+      },
     });
 
-    const passwordUnique = crypto.randomBytes(4).toString('HEX')
+    const passwordUnique = crypto.randomBytes(4).toString("HEX");
 
-
-    transporter.sendMail({
-      from: "Administrador <63498cba40-c25126@inbox.mailtrap.io>",
-      to: email,
-      subject: 'Recuperação de senha!',
-      html: `<p>Olá, sua nova senha para acessar o sistema e: ${passwordUnique}</p>`
-    }).then(msg => {
-      console.log(msg)
-    }).catch(err => {
-      console.log(err)
-    })
+    transporter
+      .sendMail({
+        from: "Administrador <63498cba40-c25126@inbox.mailtrap.io>",
+        to: email,
+        subject: "Recuperação de senha!",
+        html: `<p>Olá, sua nova senha para acessar o sistema e: ${passwordUnique}</p>`,
+      })
+      .then((msg) => {
+        console.log({ msg });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
 
     const user = await userRegister(
       {

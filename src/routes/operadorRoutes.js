@@ -16,6 +16,24 @@ router.get("/headset/update", async (req, res) => {
 });
 
 router.patch("/headset", async (req, res) => {
+  const { model, serial_number, locale } = req.body;
+
+  if (!model | !serial_number | !locale) {
+    return res.status(400).json({ msg: "Campo invalido" });
+  }
+  try {
+    const headset = new Headset({
+      model,
+      serial_number,
+      locale,
+      company: req.auth.company,
+    });
+
+    await headset.save();
+    res.status(200).json(headset);
+  } catch (error) {
+    await tryError(error, res);
+  }
  
 });
 
