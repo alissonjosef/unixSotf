@@ -1,7 +1,7 @@
 const router = require("express").Router();
 
-const Headset = require("../../models/Headset");
-const User = require("../../models/User");
+const Headset = require("../models/Headset");
+const User = require("../models/User");
 
 router.use((req, res, next) => {
   //console.log("Called: ", req.auth.profile);

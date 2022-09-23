@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const { userRegister } = require("../controllers/userController");
-const Company = require("../../models/Company");
+const Company = require("../models/Company");
 const nodemailer = require("nodemailer");
 const crypto = require("crypto")
 
@@ -32,13 +32,14 @@ router.post("/company", async (req, res) => {
 
     /* const passwordUnique = "@unix"; */
 
+    const { MAILER_USER, MAILER_PASS } = process.env;
+
     const transporter = nodemailer.createTransport({
       host: "smtp.mailtrap.io",
       port: 2525,
-      secure: true,
       auth: {
-        user: "2e029d484b977f",
-        pass: "d97d4657e3ba60"
+        user: MAILER_USER,
+        pass: MAILER_PASS
       }
     });
 
@@ -51,7 +52,7 @@ router.post("/company", async (req, res) => {
       subject: 'Recuperação de senha!',
       html: `<p>Olá, sua nova senha para acessar o sistema e: ${passwordUnique}</p>`
     }).then(msg => {
-      console.log({msg: "Email enviado com sucesso"})
+      console.log(msg)
     }).catch(err => {
       console.log(err)
     })
