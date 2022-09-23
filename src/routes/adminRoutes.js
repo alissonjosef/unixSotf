@@ -1,11 +1,13 @@
 const router = require("express").Router();
 const { userRegister } = require("../controllers/userController");
 const Company = require("../../models/Company");
+const nodemailer = require("nodemailer");
+const crypto = require("crypto")
 
 router.use((req, res, next) => {
-  console.log('Called: ', req.auth.profile);
+  console.log("Called: ", req.auth.profile);
   if (req.auth.profile != "ADMIN") {
-    return res.status(401).json({ msg: 'Não autorizado'});
+    return res.status(401).json({ msg: "Não autorizado" });
   }
   next();
 });
@@ -17,19 +19,43 @@ router.post("/company", async (req, res) => {
     if (!email | !name | !cnpj | !phone) {
       return res.status(400).json({ msg: "Campo invalido" });
     }
-  
-    const companyWithCnpj = await Company.findOne({cnpj});
-    if(companyWithCnpj){
-      return res.status(400).json({msg : 'CNPJ já cadastrado'});
+
+    const companyWithCnpj = await Company.findOne({ cnpj });
+    if (companyWithCnpj) {
+      return res.status(400).json({ msg: "CNPJ já cadastrado" });
     }
 
-    const companyWithEmail = await Company.findOne({email});
-    if(companyWithEmail){
-      return res.status(400).json({msg : 'E-mail já cadastrado'});
+    const companyWithEmail = await Company.findOne({ email });
+    if (companyWithEmail) {
+      return res.status(400).json({ msg: "E-mail já cadastrado" });
     }
 
-    const passwordUnique = "@unix";
-  
+    /* const passwordUnique = "@unix"; */
+
+    const transporter = nodemailer.createTransport({
+      host: "smtp.mailtrap.io",
+      port: 2525,
+      secure: true,
+      auth: {
+        user: "2e029d484b977f",
+        pass: "d97d4657e3ba60"
+      }
+    });
+
+    const passwordUnique = crypto.randomBytes(4).toString('HEX')
+
+
+    transporter.sendMail({
+      from: "Administrador <63498cba40-c25126@inbox.mailtrap.io>",
+      to: email,
+      subject: 'Recuperação de senha!',
+      html: `<p>Olá, sua nova senha para acessar o sistema e: ${passwordUnique}</p>`
+    }).then(msg => {
+      console.log({msg: "Email enviado com sucesso"})
+    }).catch(err => {
+      console.log(err)
+    })
+
     const user = await userRegister(
       {
         name: name,
@@ -42,7 +68,7 @@ router.post("/company", async (req, res) => {
       "SUPERVISOR",
       res
     );
-  
+
     const company = new Company({
       name,
       cnpj,
@@ -50,18 +76,17 @@ router.post("/company", async (req, res) => {
       phone,
       master: user._id,
     });
-  
+
     await company.save();
-  
+
     console.log(company);
     user.company = company._id;
-  
+
     await user.save();
-  
+
     res.status(200).json(company);
-    
   } catch (error) {
-    res.status(500).json({ msg : 'Erro interno'})
+    res.status(500).json({ msg: "Erro interno" });
   }
 });
 
@@ -80,13 +105,13 @@ router.put("/company/:id", async (req, res) => {
 
   const updatedCompany = await Company.updateOne({ _id: id }, company);
 
-  return res.status(200).json({msg: 'Registro Atualizado'});
+  return res.status(200).json({ msg: "Registro Atualizado" });
 });
 
 router.get("/company", async (req, res) => {
   try {
     const company = await Company.find();
-    
+
     res.status(200).json(company);
   } catch (error) {
     res.status(200).json({ error: error });

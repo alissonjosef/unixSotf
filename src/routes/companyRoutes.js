@@ -100,8 +100,7 @@ router.post("/user", async (req, res) => {
   }
 
   try {
-
-    const password = "@unix"
+    const password = "@unix";
     const user = new User({
       name,
       cpf,
@@ -110,11 +109,11 @@ router.post("/user", async (req, res) => {
       phone,
       headset,
       password,
-      profile
+      profile,
     });
 
-    await user.save()
-    res.status(200).json(user)
+    await user.save();
+    res.status(200).json(user);
   } catch (error) {
     await tryError(error, res);
   }
@@ -124,8 +123,8 @@ router.put("/user", async (req, res) => {
   const { name, cpf, registry, email, phone, enabled, profile, _id } = req.body;
 
   try {
-    const password = "@unix"
-    let user = await User.findByIdAndUpdate(_id , {
+    const password = "@unix";
+    let user = await User.findByIdAndUpdate(_id, {
       name,
       cpf,
       email,
@@ -134,7 +133,7 @@ router.put("/user", async (req, res) => {
       profile,
       registry,
       enabled,
-    })
+    });
     if (!user) {
       return res.status(404).json({ msg: "Não encontrado" });
     }
@@ -146,11 +145,13 @@ router.put("/user", async (req, res) => {
 });
 
 router.get("/user", async (req, res) => {
+  const {name, registry} = req.query
+
   return res.status(200).json(
     await User.find({
-      company: req.auth.company
+      name
     })
-  )
+  );
 });
 
 async function tryError(error, res) {
