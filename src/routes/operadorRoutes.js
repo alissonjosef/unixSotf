@@ -5,7 +5,7 @@ const User = require("../models/User");
 
 router.use((req, res, next) => {
   //console.log("Called: ", req.auth.profile);
-  if (req.auth.profile != "SUPERVISOR") {
+  if (req.auth.profile != "OPERADOR") {
     return res.status(401).json({ msg: "Não autorizado" });
   }
   next();

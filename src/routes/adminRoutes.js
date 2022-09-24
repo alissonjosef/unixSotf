@@ -5,7 +5,7 @@ const nodemailer = require("nodemailer");
 const crypto = require("crypto");
 
 router.use((req, res, next) => {
-  console.log("Called: ", req.auth.profile);
+  //console.log("Called: ", req.auth.profile);
   if (req.auth.profile != "ADMIN") {
     return res.status(401).json({ msg: "Não autorizado" });
   }

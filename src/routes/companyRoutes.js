@@ -6,6 +6,8 @@ const User = require("../models/User");
 const multer = require("multer");
 const { Readable } = require("stream");
 const readline = require("readline");
+const crypto = require("crypto");
+const bcrypt = require("bcrypt");
 
 const multerConfig = multer();
 
@@ -160,7 +162,10 @@ router.post("/user", async (req, res) => {
   }
 
   try {
-    const password = "@unix";
+    const passwordUnique = "@unix"
+    const salt = await bcrypt.genSalt(12);
+    const passwordHash = await bcrypt.hash(passwordUnique, salt);
+
     const user = new User({
       name,
       cpf,
@@ -168,7 +173,7 @@ router.post("/user", async (req, res) => {
       email,
       phone,
       headset,
-      password,
+      password: passwordHash,
       profile,
       company: req.auth.company,
     });
@@ -181,16 +186,18 @@ router.post("/user", async (req, res) => {
 });
 
 router.put("/user", async (req, res) => {
-  const { name, cpf, registry, email, phone, enabled, profile, _id } = req.body;
+  const { name, cpf, registry, email, phone, enabled, profile, _id, password } =
+    req.body;
 
   try {
-    const password = "@unix";
+    
+    const passwordUnique = "1234";
     let user = await User.findByIdAndUpdate(_id, {
       name,
       cpf,
       email,
       phone,
-      password,
+      password: passwordUnique,
       profile,
       registry,
       enabled,

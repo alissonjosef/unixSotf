@@ -59,17 +59,14 @@ const login = async (userCreds, res) => {
   const { registry, password } = userCreds;
 
   const user = await User.findOne({ registry: registry });
-
+  
   if(!user){
     return res.status(401).json({ msg: "Usuario inexistente" });
   }
-
   const checkPassword = await bcrypt.compare(password, user.password);
-
   if (!checkPassword) {
     return res.status(422).json({ msg: "Senha invalida!" });
   }
-
   try {
   
     const obj = {
