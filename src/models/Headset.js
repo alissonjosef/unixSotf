@@ -16,6 +16,7 @@ const Headset = mongoose.model("Headset", {
   locale: {
     type: String,
     required: [true, "{PATH} do usuario é um campo obrigatório"],
+    default: 'BR'
   },
   status: {
     type: String,

@@ -7,10 +7,15 @@ const ActivityData = mongoose.model("ActivityData", {
     ref: "User",
     required: [true, "{PATH} do usuario é um campo obrigatório"],
   },
+  company: {
+    type: Schema.Types.ObjectId,
+    ref: "Company",
+    required: [true, "{PATH} do usuario é um campo obrigatório"],
+  },
   status: {
     type: Number,
     required: [true, "{PATH} do usuario é um campo obrigatório"],
-    status: Number,
+    default: 0,
   },
   createAt: {
     type: Date,

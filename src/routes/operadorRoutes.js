@@ -1,6 +1,7 @@
 const router = require("express").Router();
 
 const Headset = require("../models/Headset");
+const ActivityData = require("../models/ActivityData");
 const User = require("../models/User");
 
 router.use((req, res, next) => {
@@ -16,17 +17,45 @@ router.get("/headset/update", async (req, res) => {
 });
 
 router.patch("/headset", async (req, res) => {
-  const { model, serial_number, locale } = req.body;
+  const { model, serial_number } = req.body;
 
-  if (!model | !serial_number | !locale) {
+  if (!model | !serial_number) {
     return res.status(400).json({ msg: "Campo invalido" });
   }
   try {
-    const headset = new Headset({
-      model,
+    let usuario = await User.findById(req.auth.id);
+    console.log(req.auth);
+    let headset = await Headset.findOne({
       serial_number,
-      locale,
+    });
+
+    if (!headset) {
+      headset = new Headset({
+        model,
+        serial_number,
+        company: req.auth.company,
+      });
+
+      await headset.save();
+    }
+    usuario.headset = headset._id;
+
+    await usuario.save();
+
+    res.status(200).json({ msg: "Headset atualizado" });
+  } catch (error) {
+    await tryError(error, res);
+  }
+});
+
+router.post("/activity", async (req, res) => {
+  const {status}  = req.body;
+
+  try {
+    const headset = new ActivityData({
+      status,
       company: req.auth.company,
+      user: req.auth.id,
     });
 
     await headset.save();
@@ -34,11 +63,6 @@ router.patch("/headset", async (req, res) => {
   } catch (error) {
     await tryError(error, res);
   }
- 
-});
-
-router.post("/activity", async (req, res) => {
- 
 });
 
 async function tryError(error, res) {

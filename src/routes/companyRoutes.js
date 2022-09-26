@@ -162,7 +162,7 @@ router.post("/user", async (req, res) => {
   }
 
   try {
-    const passwordUnique = "@unix"
+    const passwordUnique = "@unix";
     const salt = await bcrypt.genSalt(12);
     const passwordHash = await bcrypt.hash(passwordUnique, salt);
 
@@ -190,7 +190,6 @@ router.put("/user", async (req, res) => {
     req.body;
 
   try {
-    
     const passwordUnique = "1234";
     let user = await User.findByIdAndUpdate(_id, {
       name,
@@ -213,7 +212,7 @@ router.put("/user", async (req, res) => {
 });
 
 router.get("/user", async (req, res) => {
-  const { name, registry } = req.query;
+  const { name, registry, limit, skip } = req.query;
 
   const company = req.auth.company;
 
@@ -223,6 +222,8 @@ router.get("/user", async (req, res) => {
         name,
         company,
       })
+        .skip(Number(skip))
+        .limit(Number(limit))
     );
   }
 
@@ -232,6 +233,8 @@ router.get("/user", async (req, res) => {
         registry,
         company,
       })
+        .skip(Number(skip))
+        .limit(Number(limit))
     );
   }
 
@@ -239,6 +242,8 @@ router.get("/user", async (req, res) => {
     await User.find({
       company,
     })
+      .skip(Number(skip))
+      .limit(Number(limit))
   );
 });
 

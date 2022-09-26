@@ -70,9 +70,7 @@ const login = async (userCreds, res) => {
   try {
   
     const obj = {
-      id: user.id,
-      email: user.email,
-      cpf: user.cpf,
+      id: user._id,
       profile: user.profile,
       company: user.company
     };
