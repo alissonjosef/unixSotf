@@ -30,36 +30,38 @@ router.post("/company", async (req, res) => {
       return res.status(400).json({ msg: "E-mail já cadastrado" });
     }
 
-    /* const passwordUnique = "@unix"; */
+    let passwordUnique = "@unix";
 
-    const transporter = nodemailer.createTransport({
-      name: process.env.MAILER_PASS,
-      host: "smtp.mailtrap.io",
-      port: 2525,
-      auth: {
-        user: process.env.MAILER_USER,
-        pass: process.env.MAILER_PASS,
-      },
-      tls: {
-        rejectUnauthorized: false,
-      },
-    });
-
-    const passwordUnique = crypto.randomBytes(4).toString("HEX");
-
-    transporter
-      .sendMail({
-        from: "Administrador <3f45fcae-df63-360c-ab44-ffc93ec56fc4@gmail.com>",
-        to: email,
-        subject: "Recuperação de senha!",
-        html: `<p>Olá, sua nova senha para acessar o sistema e: ${passwordUnique}</p>`,
-      })
-      .then((msg) => {
-        console.log({ msg });
-      })
-      .catch((err) => {
-        console.log(err);
+    if (process.env.SEND_EMAIL) {
+      const transporter = nodemailer.createTransport({
+        name: process.env.MAILER_PASS,
+        host: "smtp.mailtrap.io",
+        port: 2525,
+        auth: {
+          user: process.env.MAILER_USER,
+          pass: process.env.MAILER_PASS,
+        },
+        tls: {
+          rejectUnauthorized: false,
+        },
       });
+
+      passwordUnique = crypto.randomBytes(4).toString("HEX");
+
+      transporter
+        .sendMail({
+          from: "Administrador <3f45fcae-df63-360c-ab44-ffc93ec56fc4@gmail.com>",
+          to: email,
+          subject: "Recuperação de senha!",
+          html: `<p>Olá, sua nova senha para acessar o sistema e: ${passwordUnique}</p>`,
+        })
+        .then((msg) => {
+          console.log({ msg });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
 
     const user = await userRegister(
       {
