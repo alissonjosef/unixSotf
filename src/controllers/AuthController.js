@@ -94,28 +94,27 @@ const login = async (userCreds, res) => {
 };
 
 const changePassword = async (req, res) => {
-  const { oldPassword, newPassword } = req;
-
+  const { oldPassword, newPassword } = req.body;
+ 
   let user = await User.findById(req.auth.id);
-  console.log(req.auth);
 
   const checkPassword = await bcrypt.compare(oldPassword, user.password);
+
   if (!checkPassword) {
     return res.status(422).json({ msg: "Senha invalida!" });
   }
 
-  const salt = await bcrypt.genSalt(12);
-  const passwordHash = await bcrypt.hash(user.newPassword, salt);
-
-  const passwordChange = new User({
-    password: passwordHash,
-    company: user.company,
-  });
-
-  await user.save();
-
-  res.status(201).json({ meg: "Senha Atualizada" });
   try {
+    const salt = await bcrypt.genSalt(12);
+    if(req.body.newPassword === undefined){
+      return res.status(422).json({ msg: "Senha Indefinida" });
+    }
+    const passwordHash = await bcrypt.hash(req.body.newPassword, salt);
+    
+    user.password = passwordHash;
+  
+    await user.save();
+    res.status(201).json({ meg: "Senha Atualizada", user });
   } catch (error) {
     console.log(error);
     res.status(500).json({ msg: "error no servidor" });
