@@ -190,7 +190,7 @@ router.put("/user", async (req, res) => {
     req.body;
 
   try {
-    const passwordUnique = "1234";
+    const passwordUnique = "@unix";
     let user = await User.findByIdAndUpdate(_id, {
       name,
       cpf,

@@ -1,6 +1,6 @@
 const router = require("express").Router();
 
-const { userRegister, login } = require("../controllers/AuthController");
+const { userRegister, login, changePassword } = require("../controllers/AuthController");
 
 router.post("/register", async (req, res) => {
   try {
@@ -13,6 +13,10 @@ router.post("/register", async (req, res) => {
 
 router.post("/", async (req, res) => {
   await login (req.body, res);
+});
+
+router.put("/changePassword", async (req, res) => {
+  await changePassword (req, res);
 });
 
 module.exports = router;
